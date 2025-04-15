@@ -18,11 +18,14 @@
     /* Reset and base styles */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { height: 100%; overflow: hidden; font-family: 'Poppins', sans-serif; color: #fff; }
-    /* Animated gradient background */
+    /* Animated gradient background - optimized with will-change */
     .gradient-bg {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
       background: linear-gradient(-45deg, #7d3efc, #1097b6, #3a47d5, #0dadad);
-      background-size: 400% 400%; animation: gradient 20s ease infinite; z-index: -2;
+      background-size: 400% 400%; 
+      animation: gradient 30s ease infinite; 
+      z-index: -2;
+      will-change: background-position;
     }
     .texture-overlay {
       position: fixed; top: 0; left: 0; right: 0; bottom: 0;
@@ -30,10 +33,21 @@
       z-index: -1;
     }
     @keyframes gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-    /* Floating particles */
+    /* Floating particles - reduced count and optimized with transform3d */
     .particles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; }
-    .particle { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.3); filter: blur(1px); animation: float 10s infinite ease-in-out; will-change: transform, opacity; }
-    @keyframes float { 0%,100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.4; } 50% { transform: translateY(-25px) rotate(180deg) scale(1.2); opacity: 0.8; } }
+    .particle { 
+      position: absolute; 
+      border-radius: 50%; 
+      background: rgba(255,255,255,0.3); 
+      filter: blur(1px); 
+      animation: float 15s infinite ease-in-out; 
+      will-change: transform, opacity;
+      transform: translateZ(0);
+    }
+    @keyframes float { 
+      0%,100% { transform: translate3d(0, 0, 0) rotate(0deg) scale(1); opacity: 0.4; } 
+      50% { transform: translate3d(0, -25px, 0) rotate(180deg) scale(1.2); opacity: 0.8; } 
+    }
     /* Loader styling */
     #loader-wrapper {
       position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -44,6 +58,7 @@
     }
     .loader { border: 8px solid rgba(255,255,255,0.1); border-top: 8px solid white;
       border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin: 25px auto;
+      will-change: transform;
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     /* Main content styling */
@@ -52,7 +67,8 @@
       margin: 50px auto; padding: 60px; background: rgba(255, 255, 255, 0.1); -webkit-backdrop-filter: blur(10px);
       backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.15);
       box-shadow: 0 15px 35px rgba(0,0,0,0.2); text-align: center;
-      animation: fadeIn 1s ease-out forwards; transition: transform 0.3s ease, box-shadow 0.3s ease;
+      animation: fadeIn 0.6s ease-out forwards; transition: transform 0.3s ease, box-shadow 0.3s ease;
+      will-change: transform, opacity;
     }
     #main-content:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.25); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -75,9 +91,12 @@
     }
     .status-dot { width: 12px; height: 12px; background-color: #4ade80; border-radius: 50%; margin-right: 12px;
       animation: pulseBetter 2s infinite;
+      will-change: transform, box-shadow;
     }
-    @keyframes pulseBetter { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74,222,128,0.7); }
-      70% { transform: scale(1); box-shadow: 0 0 0 12px rgba(74,222,128,0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+    @keyframes pulseBetter { 
+      0% { transform: scale3d(0.95, 0.95, 1); box-shadow: 0 0 0 0 rgba(74,222,128,0.7); }
+      70% { transform: scale3d(1, 1, 1); box-shadow: 0 0 0 12px rgba(74,222,128,0); } 
+      100% { transform: scale3d(0.95, 0.95, 1); box-shadow: 0 0 0 0 rgba(74,222,128,0); }
     }
     .status-text { font-size: 1rem; font-weight: 600; letter-spacing: 0.5px; }
     /* Button styling */
@@ -87,11 +106,13 @@
       background: linear-gradient(45deg, #4776E6, #8E54E9); border: none; border-radius: 50px;
       cursor: pointer; box-shadow: 0 10px 20px rgba(78, 84, 200, 0.4); transition: all 0.3s ease;
       position: relative; overflow: hidden; margin-top: 30px;
+      will-change: transform, box-shadow;
     }
     .popup-btn:before {
       content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
       transition: left 0.7s ease;
+      will-change: left;
     }
     .popup-btn:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 30px rgba(78, 84, 200, 0.6); }
     .popup-btn:hover:before { left: 100%; }
@@ -101,6 +122,7 @@
     .popup-btn.loading:after {
       content: ""; position: absolute; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3);
       border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite;
+      will-change: transform;
     }
     .btn-icon {
       width: 24px; height: 24px; margin-right: 10px;
@@ -113,12 +135,14 @@
       background: rgba(0, 0, 0, 0.75); color: #ff4d4d; font-size: 1.1em; font-weight: bold;
       z-index: 10; box-shadow: 0 -5px 15px rgba(0,0,0,0.2); letter-spacing: 0.5px;
     }
-    /* Toast notifications */
-    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+    /* Toast notifications - optimized animations */
+    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 1000; pointer-events: none; }
     .toast {
       background: rgba(0,0,0,0.8); color: white; padding: 12px 20px; border-radius: 8px;
       margin-bottom: 10px; transform: translateX(150%); animation: slideIn 0.3s forwards, fadeOut 0.5s 2.5s forwards;
       display: flex; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2); max-width: 350px;
+      will-change: transform, opacity;
+      transform: translateZ(0);
     }
     .toast.success { border-left: 4px solid #4ade80; }
     .toast.error { border-left: 4px solid #ef4444; }
@@ -175,16 +199,14 @@
       <p hidden class="secret" id="this!23@b^sskfk">Hi look you found a weird thing good job welcome to easter egg 1 of 100000. What is life? WHY? AHHHHHH?</p>
     </div>
   </div>
-  <!-- Countdown Timer -->
-  <!-- <div class="countdown-timer" id="countdown-timer">
-    Next Change in <span id="timer">Loading...</span>
-  </div> -->
-  
-  <div>
+
   <script>
+    // Optimized particle creation - reduced count, runs once, uses DocumentFragment
     function createParticles() {
       const particlesContainer = document.getElementById('particles');
-      const particleCount = 30;
+      const particleCount = 15; // Reduced from 30 to 15 for better performance
+      const fragment = document.createDocumentFragment();
+      
       for (let i = 0; i < particleCount; i++) {
         const particle = document.createElement('div');
         particle.classList.add('particle');
@@ -196,33 +218,78 @@
         particle.style.animationDelay = Math.random() * 5 + 's';
         particle.style.animationDuration = Math.random() * 10 + 5 + 's';
         particle.style.opacity = Math.random() * 0.5 + 0.1;
-        particlesContainer.appendChild(particle);
+        fragment.appendChild(particle);
       }
+      
+      particlesContainer.appendChild(fragment);
     }
 
+    // Optimized toast system - reuses DOM nodes
     const toastSystem = {
       container: document.getElementById('toast-container'),
-      show(message, type = 'info') {
+      toastPool: [],
+      maxPoolSize: 5,
+      
+      getToast() {
+        if (this.toastPool.length > 0) {
+          return this.toastPool.pop();
+        }
         const toast = document.createElement('div');
+        toast.className = 'toast';
+        return toast;
+      },
+      
+      releaseToast(toast) {
+        if (this.toastPool.length < this.maxPoolSize) {
+          // Reset the toast for reuse
+          toast.className = 'toast';
+          toast.style.animation = 'none';
+          toast.offsetHeight; // Trigger reflow
+          toast.textContent = '';
+          this.toastPool.push(toast);
+        } else {
+          toast.remove();
+        }
+      },
+      
+      show(message, type = 'info') {
+        const toast = this.getToast();
         toast.className = `toast ${type}`;
         toast.textContent = message;
         this.container.appendChild(toast);
-        setTimeout(() => { toast.remove(); }, 3000);
+        
+        // Force repaint to apply new animation
+        toast.style.animation = 'none';
+        toast.offsetHeight; // Trigger reflow
+        toast.style.animation = 'slideIn 0.3s forwards, fadeOut 0.5s 2.5s forwards';
+        
+        setTimeout(() => {
+          this.releaseToast(toast);
+        }, 3000);
       }
     };
 
+    // Optimized wifi checker - uses a throttled approach
+    let wifiCheckTimeout;
+    let isCheckingWifi = false;
+    
     function checkWiFi() {
+      if (isCheckingWifi) return;
+      isCheckingWifi = true;
+      
       const loaderMessage = document.getElementById('loader-message');
       const loaderWrapper = document.getElementById('loader-wrapper');
       const mainContent = document.getElementById('main-content');
+      
       if (navigator.onLine) {
         loaderMessage.textContent = "WiFi Connected";
         if (loaderWrapper.style.display !== "none") {
-          setTimeout(() => {
-            loaderWrapper.style.display = "none";
-            mainContent.style.display = "block";
+          loaderWrapper.style.display = "none";
+          mainContent.style.display = "block";
+          // Use requestAnimationFrame for smoother transitions
+          requestAnimationFrame(() => {
             toastSystem.show('Connected to network', 'success');
-          }, 500);
+          });
         }
       } else {
         loaderMessage.textContent = "Turn on WiFi to continue...";
@@ -233,25 +300,51 @@
           window.wasOnline = false;
         }
       }
+      
       if (navigator.onLine) { window.wasOnline = true; }
+      
+      isCheckingWifi = false;
     }
 
-    async function decryptData(e, p){
+    // Cached crypto key to avoid recalculation
+    let cachedKeys = new Map();
+    
+    async function decryptData(e, p) {
+      // Use cached key if available
+      let k;
+      if (cachedKeys.has(p)) {
+        k = cachedKeys.get(p);
+      } else {
+        let a = (s => {
+          let b = atob(s), l = b.length, u = new Uint8Array(l);
+          for(let i = 0; i < l; i++) u[i] = b.charCodeAt(i);
+          return u.buffer;
+        })(e),
+        s = a.slice(0, 16), i = a.slice(16, 28), c = a.slice(28);
+        
+        k = await crypto.subtle.importKey("raw", new TextEncoder().encode(p), "PBKDF2", false, ["deriveKey"]);
+        k = await crypto.subtle.deriveKey({name:"PBKDF2", salt: s, iterations: 100000, hash:"SHA-256"}, k, {name:"AES-GCM", length:256}, false, ["decrypt"]);
+        
+        // Cache the derived key for future use
+        cachedKeys.set(p, k);
+        
+        let d = await crypto.subtle.decrypt({name:"AES-GCM", iv: i}, k, c);
+        return new TextDecoder().decode(d);
+      }
+      
       let a = (s => {
         let b = atob(s), l = b.length, u = new Uint8Array(l);
         for(let i = 0; i < l; i++) u[i] = b.charCodeAt(i);
         return u.buffer;
       })(e),
-      s = a.slice(0, 16), i = a.slice(16, 28), c = a.slice(28),
-      k = await crypto.subtle.importKey("raw", new TextEncoder().encode(p), "PBKDF2", false, ["deriveKey"]);
-      k = await crypto.subtle.deriveKey({name:"PBKDF2", salt: s, iterations: 100000, hash:"SHA-256"}, k, {name:"AES-GCM", length:256}, false, ["decrypt"]);
+      s = a.slice(0, 16), i = a.slice(16, 28), c = a.slice(28);
+      
       let d = await crypto.subtle.decrypt({name:"AES-GCM", iv: i}, k, c);
       return new TextDecoder().decode(d);
     }
 
-    function startRedirect() {
-      const button = document.getElementById('unblock-button');
-      button.classList.add('loading');
+    // Optimized connection manager
+    function createConnectionManager(button, openMethod) {
       const urls = [
         "Vd4+eILwSSJHuNMHUTstewpqOY/LY6FbRUnY1lrgqKVIe/prNRrJ7qHRWIVVTtWsUGr+XxkxqwGrlYtXpEyOoofmFGvuLd4Jeb8V",
         "KLcL9MeS8UoQR90JPTPAcbGL2QxCA85qS+PVKSyBMVavSAp2ukfY6ujYoYXJNJCo38RHhASpdo5K8kLiwUEq5VMP7fOCTsBNQuA=",
@@ -268,25 +361,43 @@
         "pYL1xtpDksM85/0u6h8MAHX1vorh7gU7bN7S7Uy3s98CMMankj8IUDmD+HIyLGNAq1nsn6gspON7ozhzfzyuusfVDiv1Esloezmj",
         "08YnWYE9M3jGVdswpNa0m82tHcy3IhDLVYUzPYYa8VnAvQ/Recu1WikbGbjKDi/CdiEyR3eAHqq0zcuCIb+G1JR0+VI/2JsDHdJ2"
       ];
+      
       const connectionOptions = {
-        connectionTimeout: 3000,
-        retryDelay: 1500,
+        connectionTimeout: 2500, // Reduced from 3000 to 2500
+        retryDelay: 1200,        // Reduced from 1500 to 1200
         maxRetries: 3
       };
+      
+      // Memoized IPv4 validation for better performance
+      const ipValidationCache = new Map();
       function isValidIPv4(ip) {
+        if (ipValidationCache.has(ip)) {
+          return ipValidationCache.get(ip);
+        }
+        
         const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-        return ipv4Regex.test(ip);
+        const result = ipv4Regex.test(ip);
+        ipValidationCache.set(ip, result);
+        return result;
       }
+      
       const connectionManager = {
         activeConnections: new Set(),
         urlQueue: [...urls],
         redirecting: false,
         retryCount: 0,
         loadingIndicator: document.getElementById('loader-message'),
+        statusUpdateTimeout: null,
+        
         showStatus(message) {
-          this.loadingIndicator.textContent = message;
-          toastSystem.show(message, 'info');
+          // Debounce status updates
+          clearTimeout(this.statusUpdateTimeout);
+          this.statusUpdateTimeout = setTimeout(() => {
+            this.loadingIndicator.textContent = message;
+            toastSystem.show(message, 'info');
+          }, 50);
         },
+        
         async attemptConnection() {
           if (!navigator.onLine) {
             this.showStatus("Turn on WiFi to continue...");
@@ -294,23 +405,35 @@
             toastSystem.show("You're offline. Please connect to WiFi", 'error');
             return;
           }
+          
           if (this.retryCount >= connectionOptions.maxRetries) {
             this.showStatus("Connection attempts exhausted. Try again later.");
             button.classList.remove('loading');
             toastSystem.show("Couldn't find an unblocked service. Please try again later.", 'error');
             return;
           }
+          
           this.showStatus(`Searching for unblocked service... (Attempt ${this.retryCount + 1}/${connectionOptions.maxRetries})`);
-          this.initiateConnection();
+          
+          // Process connections in batches for better performance
+          this.processBatch(2); // Process 2 connections at a time
         },
-        initiateConnection() {
-          if (!this.redirecting && this.activeConnections.size === 0 && this.urlQueue.length > 0) {
+        
+        processBatch(batchSize) {
+          if (this.redirecting) return;
+          
+          const batch = Math.min(batchSize, this.urlQueue.length);
+          if (batch === 0) {
+            this.handleAllConnectionsFailed();
+            return;
+          }
+          
+          for (let i = 0; i < batch; i++) {
             const encUrl = this.urlQueue.shift();
             this.createConnection(encUrl);
-          } else if (this.activeConnections.size === 0 && this.urlQueue.length === 0) {
-            this.handleAllConnectionsFailed();
           }
         },
+        
         async createConnection(encUrl) {
           const key = document.querySelector('.easter').id;
           try {
@@ -320,33 +443,40 @@
             iframe.src = url;
             document.body.appendChild(iframe);
             this.activeConnections.add(iframe);
+            
             const timeoutId = setTimeout(() => {
               if (this.activeConnections.has(iframe)) {
                 this.cleanupConnection(iframe);
               }
             }, connectionOptions.connectionTimeout);
+            
             iframe.timeoutId = timeoutId;
           } catch (e) {
             console.error("Decryption failed", e);
             this.checkConnectionStatus();
           }
         },
+        
         cleanupConnection(iframe) {
           clearTimeout(iframe.timeoutId);
           iframe.remove();
           this.activeConnections.delete(iframe);
           this.checkConnectionStatus();
         },
+        
         checkConnectionStatus() {
           if (!this.redirecting) {
-            if (this.activeConnections.size === 0 && this.urlQueue.length > 0) {
-              const encUrl = this.urlQueue.shift();
-              this.createConnection(encUrl);
-            } else if (this.activeConnections.size === 0 && this.urlQueue.length === 0) {
-              this.handleAllConnectionsFailed();
+            if (this.activeConnections.size === 0) {
+              // Process next batch if available
+              if (this.urlQueue.length > 0) {
+                this.processBatch(2);
+              } else {
+                this.handleAllConnectionsFailed();
+              }
             }
           }
         },
+        
         handleAllConnectionsFailed() {
           this.retryCount++;
           if (this.retryCount >= connectionOptions.maxRetries) {
@@ -354,233 +484,225 @@
             button.classList.remove('loading');
             return;
           }
+          
           this.showStatus(`No service found. Retrying (${this.retryCount}/${connectionOptions.maxRetries})...`);
-          this.urlQueue = [...urls];
-          setTimeout(() => this.attemptConnection(), connectionOptions.retryDelay);
+          this.urlQueue = [...urls]; // Reset queue
+          
+          // Use requestAnimationFrame for better performance
+          requestAnimationFrame(() => {
+            setTimeout(() => this.attemptConnection(), connectionOptions.retryDelay);
+          });
         },
+        
         handleSuccessfulConnection(ip) {
           if (!this.redirecting && isValidIPv4(ip)) {
             this.redirecting = true;
-            this.showStatus("Unblocked service found! Opening...");
-            toastSystem.show("Success! Opening unblocked browser...", 'success');
+            
+            // Different behavior based on the selected method
+            if (openMethod === 'direct') {
+              this.showStatus("Unblocked service found! Opening...");
+              toastSystem.show("Success! Opening unblocked browser...", 'success');
+              
+              // Use requestAnimationFrame for smoother transition
+              requestAnimationFrame(() => {
+                const targetUrl = `http://${ip}/`;
+                window.open(targetUrl, "_blank");
+                button.classList.remove('loading');
+              });
+            } else if (openMethod === 'about:blank') {
+              this.showStatus("Unblocked service found! Opening in about:blank...");
+              toastSystem.show("Success! Opening unblocked browser in about:blank...", 'success');
+              
+              requestAnimationFrame(() => {
+                const newWindow = window.open('about:blank', '_blank');
+                if (newWindow) {
+                  newWindow.document.write(`<iframe src="http://${ip}/" style="width:100%;height:100%;border:none;"></iframe>`);
+                  newWindow.document.close();
+                }
+                button.classList.remove('loading');
+              });
+            }
+            
+            // Cleanup connections
             this.activeConnections.forEach(conn => {
               clearTimeout(conn.timeoutId);
               conn.remove();
             });
             this.activeConnections.clear();
-            setTimeout(() => {
-              const targetUrl = `http://${ip}/`;
-              window.open(targetUrl, "_blank");
-              button.classList.remove('loading');
-            }, 1);
+            
+            // Remove the message handler when done
+            if (this.messageHandler) {
+              window.removeEventListener("message", this.messageHandler);
+            }
+            
             return true;
           }
           return false;
         }
       };
-      window.addEventListener("message", function(event) {
+      
+      return connectionManager;
+    }
+
+    // Optimized message handler with improved event delegation
+    function createMessageHandler(connectionManager) {
+      return function(event) {
         if (connectionManager.redirecting) return;
+        
         const iframe = Array.from(connectionManager.activeConnections)
           .find(i => i.contentWindow === event.source);
-        if (iframe && event.data === "port" && event.ports.length > 0) {
+          
+        if (iframe && event.data === "port" && event.ports && event.ports.length > 0) {
           console.log("Setting Up webpage");
           const port = event.ports[0];
-          port.postMessage("request_ip");
+          
+          // Use a single message handler
           port.onmessage = function(e) {
             const ip = e.data;
             if (!connectionManager.handleSuccessfulConnection(ip)) {
               connectionManager.cleanupConnection(iframe);
             }
           };
+          
+          // Request IP in the next frame for better performance
+          requestAnimationFrame(() => {
+            port.postMessage("request_ip");
+          });
         }
+      };
+    }
+
+    // Debounced redirect functions
+    let redirectInProgress = false;
+    
+    function startRedirect() {
+      if (redirectInProgress) return;
+      redirectInProgress = true;
+      
+      const button = document.getElementById('unblock-button');
+      button.classList.add('loading');
+      
+      const connectionManager = createConnectionManager(button, 'direct');
+      const messageHandler = createMessageHandler(connectionManager);
+      
+      connectionManager.messageHandler = messageHandler;
+      window.addEventListener("message", messageHandler);
+      
+      // Use requestAnimationFrame for better performance
+      requestAnimationFrame(() => {
+        connectionManager.attemptConnection();
+        redirectInProgress = false;
       });
-      connectionManager.attemptConnection();
     }
 
     function startRedirectAboutBlank() {
+      if (redirectInProgress) return;
+      redirectInProgress = true;
+      
       const button = document.getElementById('unblock-about-blank-button');
       button.classList.add('loading');
-      const urls = [
-        "Vd4+eILwSSJHuNMHUTstewpqOY/LY6FbRUnY1lrgqKVIe/prNRrJ7qHRWIVVTtWsUGr+XxkxqwGrlYtXpEyOoofmFGvuLd4Jeb8V",
-        "KLcL9MeS8UoQR90JPTPAcbGL2QxCA85qS+PVKSyBMVavSAp2ukfY6ujYoYXJNJCo38RHhASpdo5K8kLiwUEq5VMP7fOCTsBNQuA=",
-        "LUtFFI10/hCi0a09AFtsIILVZXXB4nSgSyRVgBKnLCSbCMLyXAxoZQ7uDDVf2SJs+m6H42ANltPLni1FAquKtgPynmVMB4qALcE=",
-        "KMuY5bIedC8XzLkTbxnOOGkbchi8Xh4Q/EoAWY7/kaQNqzWQAVVCoQVNCesGnUbzT3WAs7PGIvwI/td6OhXtbcr+gEA=",
-        "RueuPDygAJ8QZi5o02cPFKzn1BOOiYGonngO/RVcF7x82PxY/rTZoinuXzIt6qnuake/JDjtopiDVXs+DW0jAd7FcN0=",
-        "LuNocWr4PQtlGe2A15OXNwahb5+GxPxCZ1x17EIIYMH4ljshUimG60YN7FBjqJquq0wHKLGMvKlLTRV8Welyfei1Bciec+2g0ENv9w==",
-        "GN+ujDX9UzbiNZZ9qrBzD/vdL46eHU6JLINhbhSbbgIWgbdbSvAGTiMvK4znCqVpQTzOqjQ50ARGubrxKntTAPQqvCKf7u4=",
-        "CwOgGHIGL6ZkYivcEN7C4p27bCVxXH5AcuGQWlqvDZ8y5LzWUagiAnhD7miYeM9FEovV+OCK2BmR0jaAhUfA/cOu6lHX",
-        "rbcJemDyK2ZVJHuZr7M1+bImYK6mV8M2O53Yvys4kaFPLIKzUExOGUtebIhnqOQ+iV9rPkG2J4f14W9pEC2r9CJHqKg9Bk9tX+LC/7Y=",
-        "7dKMYAN8QUD7xQ86D+9qj/3O5MiQCAxbHcNyGqpszyitk6hsicmBavMQjrhJCZ+2kPAcRNI8a17YweRU2OOeOfYIjpku0LpGwmBPCQ==",
-        "P5vNllCvJQybf0elF6tUv+DPcvn4X6Y9rc7fuRd9hKuknET++Q+Gw0Y4jV+f15RIkV7EU1BDU4iXs7wzYYAn1HFqHavAGTHIROoZfAtKPg==",
-        "IGkwhSP4wZjShvQYmd3/W7dFoKQDl2NFTHYUJO5/ZVM8xn2ulyWG03hBB0pGTyT0PGyXPFZsOFhRMgCmntddwiIuK4mJaeckyw==",
-        "pYL1xtpDksM85/0u6h8MAHX1vorh7gU7bN7S7Uy3s98CMMankj8IUDmD+HIyLGNAq1nsn6gspON7ozhzfzyuusfVDiv1Esloezmj",
-        "08YnWYE9M3jGVdswpNa0m82tHcy3IhDLVYUzPYYa8VnAvQ/Recu1WikbGbjKDi/CdiEyR3eAHqq0zcuCIb+G1JR0+VI/2JsDHdJ2"
-      ];
-      const connectionOptions = {
-        connectionTimeout: 3000,
-        retryDelay: 1500,
-        maxRetries: 3
-      };
-      function isValidIPv4(ip) {
-        const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-        return ipv4Regex.test(ip);
-      }
-      const connectionManager = {
-        activeConnections: new Set(),
-        urlQueue: [...urls],
-        redirecting: false,
-        retryCount: 0,
-        loadingIndicator: document.getElementById('loader-message'),
-        showStatus(message) {
-          this.loadingIndicator.textContent = message;
-          toastSystem.show(message, 'info');
-        },
-        async attemptConnection() {
-          if (!navigator.onLine) {
-            this.showStatus("Turn on WiFi to continue...");
-            button.classList.remove('loading');
-            toastSystem.show("You're offline. Please connect to WiFi", 'error');
-            return;
-          }
-          if (this.retryCount >= connectionOptions.maxRetries) {
-            this.showStatus("Connection attempts exhausted. Try again later.");
-            button.classList.remove('loading');
-            toastSystem.show("Couldn't find an unblocked service. Please try again later.", 'error');
-            return;
-          }
-          this.showStatus(`Searching for unblocked service... (Attempt ${this.retryCount + 1}/${connectionOptions.maxRetries})`);
-          this.initiateConnection();
-        },
-        initiateConnection() {
-          if (!this.redirecting && this.activeConnections.size === 0 && this.urlQueue.length > 0) {
-            const encUrl = this.urlQueue.shift();
-            this.createConnection(encUrl);
-          } else if (this.activeConnections.size === 0 && this.urlQueue.length === 0) {
-            this.handleAllConnectionsFailed();
-          }
-        },
-        async createConnection(encUrl) {
-          const key = document.querySelector('.easter').id;
-          try {
-            const url = await decryptData(encUrl, key);
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = url;
-            document.body.appendChild(iframe);
-            this.activeConnections.add(iframe);
-            const timeoutId = setTimeout(() => {
-              if (this.activeConnections.has(iframe)) {
-                this.cleanupConnection(iframe);
-              }
-            }, connectionOptions.connectionTimeout);
-            iframe.timeoutId = timeoutId;
-          } catch (e) {
-            console.error("Decryption failed", e);
-            this.checkConnectionStatus();
-          }
-        },
-        cleanupConnection(iframe) {
-          clearTimeout(iframe.timeoutId);
-          iframe.remove();
-          this.activeConnections.delete(iframe);
-          this.checkConnectionStatus();
-        },
-        checkConnectionStatus() {
-          if (!this.redirecting) {
-            if (this.activeConnections.size === 0 && this.urlQueue.length > 0) {
-              const encUrl = this.urlQueue.shift();
-              this.createConnection(encUrl);
-            } else if (this.activeConnections.size === 0 && this.urlQueue.length === 0) {
-              this.handleAllConnectionsFailed();
-            }
-          }
-        },
-        handleAllConnectionsFailed() {
-          this.retryCount++;
-          if (this.retryCount >= connectionOptions.maxRetries) {
-            this.showStatus("No service found. Please try again later.");
-            button.classList.remove('loading');
-            return;
-          }
-          this.showStatus(`No service found. Retrying (${this.retryCount}/${connectionOptions.maxRetries})...`);
-          this.urlQueue = [...urls];
-          setTimeout(() => this.attemptConnection(), connectionOptions.retryDelay);
-        },
-        handleSuccessfulConnection(ip) {
-          if (!this.redirecting && isValidIPv4(ip)) {
-            this.redirecting = true;
-            this.showStatus("Unblocked service found! Opening in about:blank...");
-            toastSystem.show("Success! Opening unblocked browser in about:blank...", 'success');
-            this.activeConnections.forEach(conn => {
-              clearTimeout(conn.timeoutId);
-              conn.remove();
-            });
-            this.activeConnections.clear();
-            setTimeout(() => {
-              const newWindow = window.open('about:blank', '_blank');
-              if (newWindow) {
-                newWindow.document.write(`<iframe src="https://${ip}/" style="width:100%;height:100%;border:none;"></iframe>`);
-                newWindow.document.close();
-              }
-              button.classList.remove('loading');
-            }, 1);
-            return true;
-          }
-          return false;
-        }
-      };
-      window.addEventListener("message", function(event) {
-        if (connectionManager.redirecting) return;
-        const iframe = Array.from(connectionManager.activeConnections)
-          .find(i => i.contentWindow === event.source);
-        if (iframe && event.data === "port" && event.ports.length > 0) {
-          console.log("Setting Up webpage");
-          const port = event.ports[0];
-          port.postMessage("request_ip");
-          port.onmessage = function(e) {
-            const ip = e.data;
-            if (!connectionManager.handleSuccessfulConnection(ip)) {
-              connectionManager.cleanupConnection(iframe);
-            }
-          };
-        }
+      
+      const connectionManager = createConnectionManager(button, 'about:blank');
+      const messageHandler = createMessageHandler(connectionManager);
+      
+      connectionManager.messageHandler = messageHandler;
+      window.addEventListener("message", messageHandler);
+      
+      // Use requestAnimationFrame for better performance
+      requestAnimationFrame(() => {
+        connectionManager.attemptConnection();
+        redirectInProgress = false;
       });
-      connectionManager.attemptConnection();
     }
 
+    // Optimized countdown timer with requestAnimationFrame
     const countdownTimer = {
       timerElement: document.getElementById('timer'),
+      lastUpdate: 0,
+      fps: 1, // Update once per second instead of continuous updates
+      
       init() {
+        if (!this.timerElement) return;
         this.update();
-        setInterval(() => this.update(), 1000);
+        this.animationFrame();
       },
+      
+      animationFrame() {
+        const now = performance.now();
+        const elapsed = now - this.lastUpdate;
+        
+        if (elapsed > 1000 / this.fps) {
+          this.update();
+          this.lastUpdate = now;
+        }
+        
+        requestAnimationFrame(() => this.animationFrame());
+      },
+      
       getNextResetTime() {
         const now = new Date();
         const nextReset = new Date(now);
         nextReset.setHours(6, 0, 0, 0);
-        if (now >= nextReset) { nextReset.setDate(nextReset.getDate() + 1); }
+        if (now >= nextReset) { 
+          nextReset.setDate(nextReset.getDate() + 1); 
+        }
         return nextReset;
       },
-      formatTime(value) { return value.toString().padStart(2, '0'); },
+      
+      formatTime(value) { 
+        return value.toString().padStart(2, '0'); 
+      },
+      
       update() {
         const now = new Date();
         const nextReset = this.getNextResetTime();
         const diff = nextReset - now;
+        
         const hours = Math.floor(diff / (1000 * 60 * 60));
         const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-        this.timerElement.textContent = `${this.formatTime(hours)}:${this.formatTime(minutes)}:${this.formatTime(seconds)}`;
+        
+        if (this.timerElement) {
+          this.timerElement.textContent = `${this.formatTime(hours)}:${this.formatTime(minutes)}:${this.formatTime(seconds)}`;
+        }
       }
     };
 
-    window.addEventListener('load', () => {
-      createParticles();
+    // Optimized page initialization with lazy loading
+    function initPage() {
+      // Throttled WiFi check
+      const checkWiFiThrottled = () => {
+        if (wifiCheckTimeout) return;
+        
+        wifiCheckTimeout = setTimeout(() => {
+          checkWiFi();
+          wifiCheckTimeout = null;
+        }, 1000);
+      };
+      
+      // Initial check for online status
       window.wasOnline = navigator.onLine;
       checkWiFi();
-      setInterval(checkWiFi, 1000);
-      countdownTimer.init();
-    });
+      
+      // Set up event listeners for connection status changes instead of interval
+      window.addEventListener('online', checkWiFiThrottled);
+      window.addEventListener('offline', checkWiFiThrottled);
+      
+      // Create particles with a slight delay to prioritize UI rendering
+      setTimeout(createParticles, 100);
+      
+      // Only initialize countdown timer if the element exists
+      if (document.getElementById('timer')) {
+        countdownTimer.init();
+      }
+    }
+
+    // Use requestIdleCallback for non-critical initialization
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => initPage());
+    } else {
+      setTimeout(initPage, 100);
+    }
   </script>
-  </div>
-  </body>
+</body>
 </html>

@@ -1,17 +1,330 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Redirect Example</title>
-    <script>
-        // Redirect after 3 seconds
-        setTimeout(function() {
-            window.location.href = "https://www.example.com"; // or use window.location.replace
-        }, 3000);
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Freedom Browser Unblocker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+    #status-message {
+      font-size: 2em;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    #status-message.error {
+      color: #ff0000;
+    }
+    .toast-container {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      z-index: 1000;
+    }
+    .toast {
+      background: rgba(0,0,0,0.8);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      transform: translateX(150%);
+      animation: slideIn 0.3s forwards, fadeOut 0.5s 2.5s forwards;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+      max-width: 350px;
+    }
+    .toast.success { border-left: 4px solid #4ade80; }
+    .toast.error { border-left: 4px solid #ef4444; }
+    .toast.info { border-left: 4px solid #3b82f6; }
+    @keyframes slideIn { to { transform: translateX(0); } }
+    @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+    /* Custom font for headings */
+    @font-face {
+      font-family: 'Schoolbell';
+      src: url("static/fonts/Schoolbell.woff2") format("woff2");
+      font-display: swap;
+    }
+    /* Reset and base styles */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { height: 100%; overflow: hidden; font-family: 'Poppins', sans-serif; color: #fff; }
+    /* Animated gradient background */
+    .gradient-bg {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(-45deg, #7d3efc, #1097b6, #3a47d5, #0dadad);
+      background-size: 400% 400%; animation: gradient 20s ease infinite; z-index: -2;
+    }
+    .texture-overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='4' height='4' viewBox='0 0 4 4'%3E%3Cpath fill='%23ffffff' fill-opacity='0.05' d='M1 3h1v1H1V3zm2-2h1v1H3V1z'%3E%3C/path%3E%3C/svg%3E");
+      z-index: -1;
+    }
+    @keyframes gradient { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+    /* Floating particles */
+    .particles { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; overflow: hidden; }
+    .particle { position: absolute; border-radius: 50%; background: rgba(255,255,255,0.3); filter: blur(1px); animation: float 10s infinite ease-in-out; will-change: transform, opacity; }
+    @keyframes float { 0%,100% { transform: translateY(0) rotate(0deg) scale(1); opacity: 0.4; } 50% { transform: translateY(-25px) rotate(180deg) scale(1.2); opacity: 0.8; } }
+    /* Loader styling */
+    #loader-wrapper {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      text-align: center; padding: 40px; background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px; -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); max-width: 600px;
+      border: 1px solid rgba(255,255,255,0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+    }
+    .loader { border: 8px solid rgba(255,255,255,0.1); border-top: 8px solid white;
+      border-radius: 50%; width: 60px; height: 60px; animation: spin 1s linear infinite; margin: 25px auto;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    /* Main content styling */
+    #main-content {
+      display: none; position: relative; z-index: 1; max-width: 850px;
+      margin: 50px auto; padding: 60px; background: rgba(255, 255, 255, 0.1); -webkit-backdrop-filter: blur(10px);
+      backdrop-filter: blur(10px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.15);
+      box-shadow: 0 15px 35px rgba(0,0,0,0.2); text-align: center;
+      animation: fadeIn 1s ease-out forwards; transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    #main-content:hover { transform: translateY(-5px); box-shadow: 0 20px 40px rgba(0,0,0,0.25); }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    /* Headings and text */
+    h1 {
+      font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 3.5em; margin-bottom: 25px;
+      letter-spacing: 1px; text-shadow: 0 3px 10px rgba(0,0,0,0.2); position: relative; display: inline-block;
+      background: linear-gradient(45deg, #ffffff, #e0e0ff); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    h1::after {
+      content: ''; position: absolute; bottom: -10px; left: 10%; width: 80%; height: 4px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent); border-radius: 2px;
+    }
+    h2 { font-size: 1.3em; margin-bottom: 25px; font-weight: 400; line-height: 1.6; color: rgba(255, 255, 255, 0.95); }
+    /* Status indicator */
+    .status-indicator { display: inline-flex; align-items: center; background: rgba(0,0,0,0.2);
+      padding: 10px 20px; border-radius: 50px; margin-bottom: 35px; border: 1px solid rgba(255,255,255,0.1);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .status-dot { width: 12px; height: 12px; background-color: #4ade80; border-radius: 50%; margin-right: 12px;
+      animation: pulseBetter 2s infinite;
+    }
+    @keyframes pulseBetter { 0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74,222,128,0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 12px rgba(74,222,128,0); } 100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(74,222,128,0); }
+    }
+    .status-text { font-size: 1rem; font-weight: 600; letter-spacing: 0.5px; }
+    /* Button styling */
+    .popup-btn {
+      display: inline-flex; align-items: center; justify-content: center; padding: 16px 40px;
+      font-size: 1.2rem; font-weight: 600; letter-spacing: 1px; color: #fff;
+      background: linear-gradient(45deg, #4776E6, #8E54E9); border: none; border-radius: 50px;
+      cursor: pointer; box-shadow: 0 10px 20px rgba(78, 84, 200, 0.4); transition: all 0.3s ease;
+      position: relative; overflow: hidden; margin-top: 30px;
+    }
+    .popup-btn:before {
+      content: ''; position: absolute; top: 0; left: -100%; width: 100%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+      transition: left 0.7s ease;
+    }
+    .popup-btn:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 15px 30px rgba(78, 84, 200, 0.6); }
+    .popup-btn:hover:before { left: 100%; }
+    .popup-btn:active { transform: translateY(-2px) scale(0.98); }
+    .popup-btn.loading { pointer-events: none; opacity: 0.9; }
+    .popup-btn.loading .btn-text { visibility: hidden; }
+    .popup-btn.loading:after {
+      content: ""; position: absolute; width: 20px; height: 20px; border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite;
+    }
+    .btn-icon {
+      width: 24px; height: 24px; margin-right: 10px;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 6c1.4 0 2.8 1.1 2.8 2.5V11c.6 0 1.2.6 1.2 1.3v3.5c0 .6-.6 1.2-1.3 1.2H9.2c-.6 0-1.2-.6-1.2-1.3v-3.5c0-.6.6-1.2 1.2-1.2V9.5C9.2 8.1 10.6 7 12 7zm0 1.2c-.8 0-1.5.5-1.5 1.3V11h3V9.5c0-.8-.7-1.3-1.5-1.3z'/%3E%3C/svg%3E");
+      background-size: cover; background-repeat: no-repeat;
+    }
+    /* Countdown Timer */
+    .countdown-timer {
+      position: fixed; bottom: 0; width: 100%; text-align: center; padding: 12px 0;
+      background: rgba(0, 0, 0, 0.75); color: #ff4d4d; font-size: 1.1em; font-weight: bold;
+      z-index: 10; box-shadow: 0 -5px 15px rgba(0,0,0,0.2); letter-spacing: 0.5px;
+    }
+    /* Toast notifications */
+    .toast-container { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+    .toast {
+      background: rgba(0,0,0,0.8); color: white; padding: 12px 20px; border-radius: 8px;
+      margin-bottom: 10px; transform: translateX(150%); animation: slideIn 0.3s forwards, fadeOut 0.5s 2.5s forwards;
+      display: flex; align-items: center; box-shadow: 0 5px 15px rgba(0,0,0,0.2); max-width: 350px;
+    }
+    .toast.success { border-left: 4px solid #4ade80; }
+    .toast.error { border-left: 4px solid #ef4444; }
+    .toast.info { border-left: 4px solid #3b82f6; }
+    @keyframes slideIn { to { transform: translateX(0); } }
+    @keyframes fadeOut { to { opacity: 0; visibility: hidden; } }
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      #main-content { margin: 20px; padding: 40px 25px; }
+      #loader-wrapper { margin: 20px; padding: 30px 20px; max-width: calc(100% - 40px); }
+      h1 { font-size: 2.5em; } h2 { font-size: 1.1em; }
+      .popup-btn { padding: 14px 30px; font-size: 1rem; }
+    }
+    @media (max-width: 480px) { h1 { font-size: 2em; } .loader { width: 50px; height: 50px; } }   
+  </style>
 </head>
 <body>
-    <h1>You will be redirected shortly...</h1>
+    <div class="gradient-bg" id="frwejlwrk3*&"></div>
+    <div class="texture-overlay" id="£%^£$efj144h£"></div>
+    <div class="toast-container" id="toast-container"></div>
+    <div id="loader-wrapper">
+      <h1>Freedom Browser Unblocked BETA</h1>
+      <div class="loader" id="bM./?::;gr3"></div>
+      <h2 id="loader-message">Turn on WiFi to continue...</h2>
+    </div>
+    <div>
+      <div hidden class="easter" id="wp£b$0f"></div>
+        <p hidden class="secret" id="this!23@b^sskfk">Hi look you found a weird thing good job welcome to easter egg 1 of 100000. What is life? WHY? AHHHHHH?</p>
+      </div>
+    </div>
+
+  <script>
+    const toastSystem = {
+      container: document.getElementById('toast-container'),
+      show(message, type = 'info') {
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        toast.textContent = message;
+        this.container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+      }
+    };
+
+    // Status message element
+    const statusMessage = document.getElementById('loader-message');
+
+    // Flag for redirection
+    let redirectionStarted = false;
+
+    // Decrypt data function
+    async function decryptData(e, p) {
+      let a = (s => {
+        let b = atob(s), l = b.length, u = new Uint8Array(l);
+        for(let i = 0; i < l; i++) u[i] = b.charCodeAt(i);
+        return u.buffer;
+      })(e),
+      s = a.slice(0, 16), i = a.slice(16, 28), c = a.slice(28),
+      k = await crypto.subtle.importKey("raw", new TextEncoder().encode(p), "PBKDF2", false, ["deriveKey"]);
+      k = await crypto.subtle.deriveKey({name:"PBKDF2", salt: s, iterations: 100000, hash:"SHA-256"}, k, {name:"AES-GCM", length:256}, false, ["decrypt"]);
+      let d = await crypto.subtle.decrypt({name:"AES-GCM", iv: i}, k, c);
+      return new TextDecoder().decode(d);
+    }
+
+    // Encrypted URLs
+    const urls = [
+  "bPxnuwyPPSpXe/k/0O2qvdQtheH0aXRMEgloa3Uc38dpVAEZQ9SX2eDkXTMBSTnsW3stYCVrqJDqAlgCceByhEPZWYFBrLQJF7J7vzXwRCrJz5/I8AZXwmE=",
+  "CEcbtJGYbg4j+RC0z/6tw3gKke9YOIRW0YJE6eivqrQys3T6DTVT3X/1FJTURpk92GRvR6XtAjbNKXSKcnltkB9cXMDqQkUhcRDIWI+YG7Bp7QSuMtazOILeMZJ5efNcc0zT",
+  "+30/IQ5loXTqtkpKCfi2uTs0QiQMgXBjlbSWF6mv7FqkgScvTZnPHiLvoXMNol/GUfZ8+Xg5VHDPQRWlPK/6MdJ1MQjpCor4zZyEF/tmdS407RZfYv2YoWa/Gc4j"
+];
+
+    // Connection options
+    const connectionOptions = {
+      connectionTimeout: 3000,
+      retryDelay: 1500,
+      maxRetries: 3
+    };
+
+    // Connection manager
+    const connectionManager = {
+      urlQueue: [...urls],
+      redirecting: false,
+      retryCount: 0,
+      showStatus(message, isError = false) {
+        statusMessage.textContent = message;
+        toastSystem.show(message, isError ? 'error' : 'info');
+        if (isError) {
+          statusMessage.classList.add('error');
+        } else {
+          statusMessage.classList.remove('error');
+        }
+      },
+      async attemptConnection() {
+        if (!navigator.onLine) {
+          this.showStatus("WiFi connection lost. Please reconnect.", true);
+          redirectionStarted = false;
+          return;
+        }
+        if (this.retryCount >= connectionOptions.maxRetries) {
+          this.showStatus("Connection attempts exhausted. Please try again later.", true);
+          toastSystem.show("Couldn't find an unblocked service. Please try again later.", 'error');
+          return;
+        }
+        this.showStatus(`Searching for unblocked service... (Attempt ${this.retryCount + 1}/${connectionOptions.maxRetries})`);
+        await this.initiateConnection();
+      },
+      async initiateConnection() {
+        if (this.redirecting) return;
+        if (this.urlQueue.length === 0) {
+          this.handleConnectionFailed();
+          return;
+        }
+        const encUrl = this.urlQueue.shift();
+        await this.redirectToUrl(encUrl);
+      },
+      async redirectToUrl(encUrl) {
+        const key = document.querySelector('.easter').id;
+        try {
+          this.redirecting = true;
+          const url = await decryptData(encUrl, key);
+          this.showStatus("Redirecting to unblocked service...");
+          toastSystem.show("Attempting to redirect...", 'info');
+
+          // Set up a timeout to detect if the redirect fails
+          const timeoutPromise = new Promise((_, reject) => {
+            setTimeout(() => reject(new Error("Redirect timed out")), connectionOptions.connectionTimeout);
+          });
+
+          // Attempt to fetch the URL to verify it’s accessible
+          const fetchPromise = fetch(url, { mode: 'no-cors' }).then(() => {
+            // Redirect to the URL
+            window.location.href = url;
+          });
+
+          // Race between fetch and timeout
+          await Promise.race([fetchPromise, timeoutPromise]);
+        } catch (e) {
+          console.error("Redirect failed", e);
+          this.redirecting = false;
+          this.handleConnectionFailed();
+        }
+      },
+      handleConnectionFailed() {
+        this.retryCount++;
+        if (this.retryCount >= connectionOptions.maxRetries) {
+          this.showStatus("No service found. Please try again later.", true);
+          toastSystem.show("No service found. Please try again later.", 'error');
+          return;
+        }
+        this.showStatus(`No service found. Retrying (${this.retryCount}/${connectionOptions.maxRetries})...`);
+        this.urlQueue = [...urls];
+        setTimeout(() => this.attemptConnection(), connectionOptions.retryDelay);
+      }
+    };
+
+    // WiFi check function
+    function checkWiFi() {
+      if (navigator.onLine) {
+        statusMessage.textContent = "WiFi connected. Searching for unblocked service...";
+        statusMessage.classList.remove('error');
+        if (!redirectionStarted) {
+          redirectionStarted = true;
+          connectionManager.attemptConnection();
+        }
+      } else {
+        statusMessage.textContent = "Turn on WiFi to continue...";
+        statusMessage.classList.add('error');
+        redirectionStarted = false;
+      }
+    }
+
+    // Start periodic WiFi checks
+    setInterval(checkWiFi, 1000);
+
+    // Initial WiFi check
+    checkWiFi();
+  </script>
 </body>
 </html>
